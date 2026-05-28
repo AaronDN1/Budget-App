@@ -37,7 +37,25 @@ export default function Income({ data, setData }: IncomeProps) {
         {data.incomeSources.length === 0 ? (
           <p className="p-6 text-sm text-slate-500 dark:text-slate-400">No income sources added yet.</p>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          <div className="grid gap-3 p-4 md:hidden">
+            {data.incomeSources.map((source) => (
+              <article key={source.id} className="rounded-lg border border-slate-200 p-4 dark:border-slate-800">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-base font-black">{source.name}</p>
+                    <p className="mt-1 text-sm capitalize text-slate-500 dark:text-slate-400">{source.frequency} | {source.recurring ? "recurring" : "one-time"}</p>
+                  </div>
+                  <p className="shrink-0 text-lg font-black text-emerald-600">{formatCurrency(incomeToMonthly(source), currency)}/mo</p>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <button className="btn-secondary px-3" type="button" onClick={() => setEditing(source)}><Pencil className="h-4 w-4" /> Edit</button>
+                  <button className="btn-danger px-3" type="button" onClick={() => deleteIncome(source.id)}><Trash2 className="h-4 w-4" /> Delete</button>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full min-w-[720px] text-left text-sm">
               <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-950 dark:text-slate-400">
                 <tr><th className="p-4">Source</th><th>Amount</th><th>Frequency</th><th>Monthly</th><th>Recurring</th><th className="text-right pr-4">Actions</th></tr>
@@ -59,6 +77,7 @@ export default function Income({ data, setData }: IncomeProps) {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </section>
     </div>

@@ -1,6 +1,6 @@
-# Budget OS
+# BudgetCommand
 
-A Vite + React + TypeScript personal budgeting app with Supabase Auth, Supabase Postgres cloud sync, Tailwind CSS, and Recharts.
+A Vite + React + TypeScript personal budgeting PWA with Supabase Auth, Supabase Postgres cloud sync, Tailwind CSS, Recharts, and install support for iPhone via Safari Add to Home Screen.
 
 ## Local Setup
 
@@ -28,6 +28,17 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 ```bash
 npm run dev
 ```
+
+## PWA Testing
+
+For local PWA testing, build and preview the production app:
+
+```bash
+npm run build
+npm run preview
+```
+
+Open the local URL in a browser and confirm `manifest.webmanifest` and `sw.js` are served. On iPhone, deploy to Vercel first because iOS requires HTTPS for the best install experience.
 
 ## Supabase Setup
 
@@ -58,6 +69,8 @@ npm run build
 ```
 
 5. Deploy.
+
+After deployment, open the Vercel URL in Safari on iPhone, tap Share, then Add to Home Screen. The installed app should appear as BudgetCommand.
 
 ## Notes
 

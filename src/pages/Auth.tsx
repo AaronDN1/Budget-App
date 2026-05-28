@@ -38,9 +38,9 @@ export default function Auth({ mode, navigate }: AuthProps) {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10 dark:bg-slate-950">
+    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-8 dark:bg-slate-950 sm:py-10">
       <section className="panel w-full max-w-md p-6">
-        <button className="text-sm font-bold text-blue-600 dark:text-blue-400" type="button" onClick={() => navigate("/")}>Back to Budget OS</button>
+        <button className="text-sm font-bold text-blue-600 dark:text-blue-400" type="button" onClick={() => navigate("/")}>Back to BudgetCommand</button>
         <h1 className="mt-6 text-3xl font-black text-slate-950 dark:text-white">{isSignup ? "Create your account" : "Welcome back"}</h1>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
           {isSignup ? "Start syncing your budget securely across devices." : "Sign in to open your budget command center."}

@@ -21,7 +21,7 @@ export default function StatCard({ title, value, detail, icon: Icon, tone = "blu
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
-          <p className="mt-2 text-2xl font-bold text-slate-950 dark:text-white">{value}</p>
+          <p className="mt-2 break-words text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">{value}</p>
           {detail && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{detail}</p>}
         </div>
         <div className={`rounded-lg p-2.5 ${toneClasses[tone]}`}>

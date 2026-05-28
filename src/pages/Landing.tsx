@@ -18,8 +18,8 @@ export default function Landing({ navigate }: LandingProps) {
     <main className="min-h-screen bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-white">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
         <button className="text-left" type="button" onClick={() => navigate("/")}>
-          <p className="text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400">Budget OS</p>
-          <p className="text-lg font-black">Command Center</p>
+          <p className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">BudgetCommand</p>
+          <p className="text-lg font-black">Financial Command Center</p>
         </button>
         <div className="flex gap-3">
           <button className="btn-secondary" type="button" onClick={() => navigate("/login")}>Sign In</button>
@@ -27,7 +27,7 @@ export default function Landing({ navigate }: LandingProps) {
         </div>
       </nav>
 
-      <section className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:px-8 lg:py-20">
+      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:px-8 lg:py-20">
         <div className="flex flex-col justify-center">
           <div className="w-fit rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-sm font-bold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300">
             Cloud-synced personal finance planning
@@ -38,13 +38,13 @@ export default function Landing({ navigate }: LandingProps) {
           <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
             Plan your income, control your expenses, and automatically divide your money into the funds that matter.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <button className="btn-primary" type="button" onClick={() => navigate("/signup")}>Get Started <ArrowRight className="h-4 w-4" /></button>
-            <button className="btn-secondary" type="button" onClick={() => navigate("/login")}>Sign In</button>
+          <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
+            <button className="btn-primary w-full sm:w-auto" type="button" onClick={() => navigate("/signup")}>Get Started <ArrowRight className="h-4 w-4" /></button>
+            <button className="btn-secondary w-full sm:w-auto" type="button" onClick={() => navigate("/login")}>Sign In</button>
           </div>
         </div>
 
-        <div className="panel p-5">
+        <div className="panel max-w-full p-4 sm:p-5">
           <div className="rounded-lg bg-gradient-to-br from-blue-600 to-emerald-500 p-5 text-white">
             <p className="text-sm font-semibold opacity-90">Monthly plan</p>
             <p className="mt-2 text-4xl font-black">$2,425</p>

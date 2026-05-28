@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Layout from "./components/Layout";
+import InstallPwaHint from "./components/InstallPwaHint";
 import MigrationPrompt from "./components/MigrationPrompt";
 import { PageKey } from "./components/Sidebar";
 import { BudgetDataProvider, useBudgetData } from "./context/BudgetDataContext";
@@ -65,13 +66,13 @@ function AppRoutes() {
   }, [authLoading, navigate, path, user]);
 
   if (authLoading) {
-    return <div className="flex min-h-screen items-center justify-center bg-slate-50 font-bold dark:bg-slate-950 dark:text-white">Loading Budget OS...</div>;
+    return <div className="flex min-h-screen items-center justify-center bg-slate-50 font-bold dark:bg-slate-950 dark:text-white">Loading BudgetCommand...</div>;
   }
 
   if (!user) {
-    if (path === "/login") return <Auth mode="login" navigate={navigate} />;
-    if (path === "/signup") return <Auth mode="signup" navigate={navigate} />;
-    return <Landing navigate={navigate} />;
+    if (path === "/login") return <><Auth mode="login" navigate={navigate} /><InstallPwaHint /></>;
+    if (path === "/signup") return <><Auth mode="signup" navigate={navigate} /><InstallPwaHint /></>;
+    return <><Landing navigate={navigate} /><InstallPwaHint /></>;
   }
 
   return (
@@ -131,7 +132,7 @@ function SignedInApp({
   const setActivePage = (page: PageKey) => navigate(pageToPath[page]);
 
   const page = {
-    dashboard: <Dashboard data={data} metrics={metrics} />,
+    dashboard: <Dashboard data={data} metrics={metrics} onNavigate={setActivePage} />,
     income: <Income data={data} setData={setData} />,
     expenses: <Expenses data={data} setData={setData} />,
     subscriptions: <Subscriptions data={data} setData={setData} />,
@@ -165,6 +166,7 @@ function SignedInApp({
         )}
         {page}
       </Layout>
+      <InstallPwaHint />
       {needsMigration && <MigrationPrompt saving={saving} onImport={importLocalData} onSkip={skipLocalMigration} onLater={remindLater} />}
     </>
   );

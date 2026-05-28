@@ -29,4 +29,5 @@ declare module "lucide-react" {
   export const Upload: LucideIcon;
   export const Wallet: LucideIcon;
   export const WalletCards: LucideIcon;
+  export const X: LucideIcon;
 }
