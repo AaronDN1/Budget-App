@@ -77,7 +77,7 @@ export interface MonthlySnapshot {
 export interface AppSettings {
   budgetMode: BudgetModeName;
   customAllocation: CustomAllocation;
-  theme: "light" | "dark";
+  theme: ThemeId;
   currencySymbol: string;
   budgetMonthStartDay: number;
 }
@@ -90,3 +90,4 @@ export interface AppData {
   settings: AppSettings;
   monthlySnapshots: MonthlySnapshot[];
 }
+import { ThemeId } from "../data/themes";

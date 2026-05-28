@@ -1,4 +1,5 @@
 import { DEFAULT_FUNDS } from "../data/defaultBudgetModes";
+import { DEFAULT_THEME, normalizeTheme } from "../data/themes";
 import {
   AppData,
   AppSettings,
@@ -17,7 +18,7 @@ type DbProfile = {
   currency: string | null;
   budget_month_start_day: number | null;
   selected_budget_mode: AppSettings["budgetMode"] | null;
-  theme: AppSettings["theme"] | null;
+  theme: string | null;
   custom_allocations: AppSettings["customAllocation"] | null;
   local_migration_completed: boolean | null;
 };
@@ -338,7 +339,7 @@ export const loadCloudBudgetData = async (userId: string, fallback: AppData): Pr
     settings: {
       budgetMode: profile.selected_budget_mode || fallback.settings.budgetMode,
       customAllocation: profile.custom_allocations || fallback.settings.customAllocation,
-      theme: profile.theme || fallback.settings.theme,
+      theme: normalizeTheme(profile.theme || fallback.settings.theme),
       currencySymbol: profile.currency || fallback.settings.currencySymbol,
       budgetMonthStartDay: profile.budget_month_start_day || fallback.settings.budgetMonthStartDay,
     },
@@ -454,7 +455,7 @@ export const resetCloudBudgetData = async (userId: string) => {
         Travel: 10,
         "Fun Fund": 5,
       },
-      theme: "light",
+      theme: DEFAULT_THEME,
       currencySymbol: "$",
       budgetMonthStartDay: 1,
     },

@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AppData } from "../types";
 import { hasLocalData, loadData } from "../utils/storage";
+import { applyTheme } from "../data/themes";
 import { useAuth } from "./AuthContext";
 import {
   getProfile,
@@ -63,7 +64,7 @@ export function BudgetDataProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", data.settings.theme === "dark");
+    applyTheme(data.settings.theme);
   }, [data.settings.theme]);
 
   const scheduleCloudSave = useCallback(

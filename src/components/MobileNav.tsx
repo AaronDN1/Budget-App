@@ -16,7 +16,7 @@ interface MobileNavProps {
 
 export default function MobileNav({ activePage, setActivePage }: MobileNavProps) {
   return (
-    <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 px-2 pt-2 shadow-[0_-14px_40px_rgba(15,23,42,0.08)] backdrop-blur dark:border-slate-800 dark:bg-slate-950/95 lg:hidden">
+    <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-[color:var(--border)] bg-[color:var(--card)] px-2 pt-2 shadow-[0_-14px_40px_rgba(15,23,42,0.08)] backdrop-blur lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
         {tabs.map(({ key, label, icon: Icon }) => {
           const active = activePage === key;
@@ -24,7 +24,7 @@ export default function MobileNav({ activePage, setActivePage }: MobileNavProps)
             <button
               key={key}
               className={`flex min-h-[3.25rem] flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-bold transition ${
-                active ? "bg-blue-600 text-white" : "text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-900"
+                active ? "bg-[color:var(--primary)] text-white" : "text-[color:var(--muted)] hover:bg-[color:var(--card-hover)]"
               }`}
               type="button"
               onClick={() => setActivePage(key)}

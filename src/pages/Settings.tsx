@@ -1,8 +1,10 @@
 import { Download, RotateCcw, Save, Upload } from "lucide-react";
 import { ChangeEvent, useMemo, useRef, useState } from "react";
 import { BUDGET_MODES } from "../data/defaultBudgetModes";
+import { normalizeTheme, ThemeId } from "../data/themes";
 import { AppData, BudgetModeName, CustomAllocation, FundName } from "../types";
 import { generateMonthlySnapshot } from "../utils/calculations";
+import ThemeSelector from "../components/ThemeSelector";
 
 interface SettingsProps {
   data: AppData;
@@ -127,14 +129,10 @@ export default function Settings({ data, setData, userEmail, signOut, exportClou
 
       <section className="panel p-5">
         <h3 className="text-lg font-bold">Preferences</h3>
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <label>
-            <span className="label">Theme</span>
-            <select className="field mt-1" value={data.settings.theme} onChange={(e) => updateSetting("theme", e.target.value as "light" | "dark")}>
-              <option value="light">light</option>
-              <option value="dark">dark</option>
-            </select>
-          </label>
+        <div className="mt-4">
+          <ThemeSelector value={normalizeTheme(data.settings.theme)} onChange={(theme: ThemeId) => updateSetting("theme", theme)} />
+        </div>
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
           <label>
             <span className="label">Currency Symbol</span>
             <input className="field mt-1" value={data.settings.currencySymbol} maxLength={4} onChange={(e) => updateSetting("currencySymbol", e.target.value || "$")} />

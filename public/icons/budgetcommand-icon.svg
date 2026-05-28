@@ -10,10 +10,10 @@
       <stop offset="1" stop-color="#d1fae5"/>
     </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <rect x="96" y="96" width="320" height="320" rx="72" fill="#ffffff" opacity="0.08"/>
-  <path d="M148 300c26 64 109 86 166 42 30-23 48-58 50-96" fill="none" stroke="#a7f3d0" stroke-width="34" stroke-linecap="round"/>
-  <path d="M148 188h218" stroke="url(#mark)" stroke-width="36" stroke-linecap="round"/>
-  <path d="M148 246h126" stroke="#67e8f9" stroke-width="28" stroke-linecap="round" opacity="0.9"/>
-  <text x="256" y="346" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="122" font-weight="900" letter-spacing="-6" fill="#ffffff">BC</text>
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+  <rect x="86" y="86" width="340" height="340" rx="86" fill="#ffffff" opacity="0.08"/>
+  <path d="M132 312c32 74 131 96 194 39 36-33 54-75 56-123" fill="none" stroke="#a7f3d0" stroke-width="34" stroke-linecap="round"/>
+  <path d="M132 184h248" stroke="url(#mark)" stroke-width="38" stroke-linecap="round"/>
+  <path d="M132 246h145" stroke="#67e8f9" stroke-width="28" stroke-linecap="round" opacity="0.9"/>
+  <text x="256" y="365" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="124" font-weight="900" letter-spacing="-6" fill="#ffffff">BC</text>
 </svg>

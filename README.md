@@ -77,3 +77,5 @@ After deployment, open the Vercel URL in Safari on iPhone, tap Share, then Add t
 - Do not put a Supabase service role key in the frontend.
 - User data access is enforced by Supabase Auth and Row Level Security.
 - Existing localStorage data can be imported into a cloud account after sign-in.
+- Themes are stored in the existing `profiles.theme` field and mirrored in localStorage for fast startup.
+- The default theme is Command Cream, with Slate Dark, Wall Street, Rose Capital, Ocean Ledger, and Minimal Gray available in Settings.

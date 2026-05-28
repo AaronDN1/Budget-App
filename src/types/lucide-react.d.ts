@@ -8,6 +8,7 @@ declare module "lucide-react" {
   export const Banknote: LucideIcon;
   export const BarChart3: LucideIcon;
   export const CalendarClock: LucideIcon;
+  export const Check: LucideIcon;
   export const Cloud: LucideIcon;
   export const CloudUpload: LucideIcon;
   export const CircleDollarSign: LucideIcon;
@@ -16,6 +17,7 @@ declare module "lucide-react" {
   export const Gauge: LucideIcon;
   export const Landmark: LucideIcon;
   export const LineChart: LucideIcon;
+  export const Lock: LucideIcon;
   export const LogOut: LucideIcon;
   export const Pencil: LucideIcon;
   export const PiggyBank: LucideIcon;
@@ -23,6 +25,7 @@ declare module "lucide-react" {
   export const Save: LucideIcon;
   export const Settings: LucideIcon;
   export const ShieldCheck: LucideIcon;
+  export const Smartphone: LucideIcon;
   export const ToggleLeft: LucideIcon;
   export const Trash2: LucideIcon;
   export const TrendingUp: LucideIcon;

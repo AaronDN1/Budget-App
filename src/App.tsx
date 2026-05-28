@@ -23,6 +23,7 @@ import {
   calculateMonthlySubscriptionTotal,
   getActiveAllocation,
 } from "./utils/calculations";
+import { applyTheme, THEME_STORAGE_KEY } from "./data/themes";
 
 const pageToPath: Record<PageKey, string> = {
   dashboard: "/app/dashboard",
@@ -61,12 +62,16 @@ function AppRoutes() {
   const { path, navigate } = useRoute();
 
   useEffect(() => {
+    applyTheme(localStorage.getItem(THEME_STORAGE_KEY));
+  }, []);
+
+  useEffect(() => {
     if (!authLoading && !user && path.startsWith("/app")) navigate("/login");
     if (!authLoading && user && (path === "/login" || path === "/signup")) navigate("/app/dashboard");
   }, [authLoading, navigate, path, user]);
 
   if (authLoading) {
-    return <div className="flex min-h-screen items-center justify-center bg-slate-50 font-bold dark:bg-slate-950 dark:text-white">Loading BudgetCommand...</div>;
+    return <div className="theme-page flex min-h-screen items-center justify-center font-bold">Loading BudgetCommand...</div>;
   }
 
   if (!user) {
@@ -111,7 +116,7 @@ function SignedInApp({
   const activePage = pathToPage(path);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", data.settings.theme === "dark");
+    applyTheme(data.settings.theme);
   }, [data.settings.theme]);
 
   const metrics = useMemo(() => {
@@ -153,7 +158,7 @@ function SignedInApp({
   }[activePage];
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-slate-50 font-bold dark:bg-slate-950 dark:text-white">Loading cloud budget...</div>;
+    return <div className="theme-page flex min-h-screen items-center justify-center font-bold">Loading cloud budget...</div>;
   }
 
   return (

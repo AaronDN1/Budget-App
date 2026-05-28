@@ -1,4 +1,5 @@
 import { DEFAULT_ALLOCATIONS, DEFAULT_FUNDS } from "../data/defaultBudgetModes";
+import { DEFAULT_THEME, normalizeTheme } from "../data/themes";
 import { AppData } from "../types";
 
 const STORAGE_KEY = "budget-command-center-data";
@@ -11,7 +12,7 @@ export const createDefaultData = (): AppData => ({
   settings: {
     budgetMode: "Balanced",
     customAllocation: DEFAULT_ALLOCATIONS.Custom,
-    theme: "light",
+    theme: DEFAULT_THEME,
     currencySymbol: "$",
     budgetMonthStartDay: 1,
   },
@@ -27,7 +28,7 @@ export const loadData = (): AppData => {
     return {
       ...defaults,
       ...parsed,
-      settings: { ...defaults.settings, ...parsed.settings },
+      settings: { ...defaults.settings, ...parsed.settings, theme: normalizeTheme(parsed.settings?.theme) },
       funds: defaults.funds.map((defaultFund) => {
         const savedFund = parsed.funds?.find((fund) => fund.name === defaultFund.name);
         return { ...defaultFund, ...savedFund, history: savedFund?.history || [] };
