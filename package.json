@@ -10,6 +10,7 @@
     "serve:dist": "node serve-dist.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.106.2",
     "@vitejs/plugin-react": "^5.0.0",
     "caniuse-lite": "^1.0.30001793",
     "lucide-react": "^0.468.0",
