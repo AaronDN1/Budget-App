@@ -1,0 +1,60 @@
+import { DEFAULT_ALLOCATIONS, DEFAULT_FUNDS } from "../data/defaultBudgetModes";
+import { AppData } from "../types";
+
+const STORAGE_KEY = "budget-command-center-data";
+
+export const createDefaultData = (): AppData => ({
+  incomeSources: [],
+  expenses: [],
+  subscriptions: [],
+  funds: DEFAULT_FUNDS.map((fund) => ({ ...fund, history: [] })),
+  settings: {
+    budgetMode: "Balanced",
+    customAllocation: DEFAULT_ALLOCATIONS.Custom,
+    theme: "light",
+    currencySymbol: "$",
+    budgetMonthStartDay: 1,
+  },
+  monthlySnapshots: [],
+});
+
+export const loadData = (): AppData => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return createDefaultData();
+    const parsed = JSON.parse(raw) as Partial<AppData>;
+    const defaults = createDefaultData();
+    return {
+      ...defaults,
+      ...parsed,
+      settings: { ...defaults.settings, ...parsed.settings },
+      funds: defaults.funds.map((defaultFund) => {
+        const savedFund = parsed.funds?.find((fund) => fund.name === defaultFund.name);
+        return { ...defaultFund, ...savedFund, history: savedFund?.history || [] };
+      }),
+    };
+  } catch {
+    return createDefaultData();
+  }
+};
+
+export const saveData = (data: AppData) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+};
+
+export const exportData = (data: AppData) =>
+  new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+
+export const importData = async (file: File): Promise<AppData> => {
+  const text = await file.text();
+  const parsed = JSON.parse(text) as AppData;
+  if (!parsed.settings || !Array.isArray(parsed.funds)) {
+    throw new Error("Invalid budget data file.");
+  }
+  return parsed;
+};
+
+export const resetData = () => {
+  localStorage.removeItem(STORAGE_KEY);
+  return createDefaultData();
+};
