@@ -1,16 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
   <defs>
-    <linearGradient id="bg" x1="40" y1="28" x2="480" y2="492" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#071827"/>
-      <stop offset=".56" stop-color="#0b3a3f"/>
-      <stop offset="1" stop-color="#0f766e"/>
+    <linearGradient id="bgGradient" x1="20" y1="20" x2="160" y2="160">
+      <stop offset="0%" stop-color="#153F38"/>
+      <stop offset="55%" stop-color="#0B2F2B"/>
+      <stop offset="100%" stop-color="#061F1D"/>
+    </linearGradient>
+    <linearGradient id="markGradient" x1="48" y1="38" x2="128" y2="145">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="55%" stop-color="#CFFFF5"/>
+      <stop offset="100%" stop-color="#39E6CB"/>
     </linearGradient>
   </defs>
-  <rect width="512" height="512" fill="url(#bg)"/>
-  <rect x="88" y="88" width="336" height="336" rx="88" fill="none" stroke="#ffffff" stroke-opacity=".16" stroke-width="14"/>
-  <path d="M178 154v204h90c40 0 66-22 66-55 0-25-16-42-40-48 20-7 32-23 32-45 0-34-26-56-66-56h-82Z" fill="none" stroke="#ffffff" stroke-width="34" stroke-linejoin="round"/>
-  <path d="M178 250h82" stroke="#ffffff" stroke-width="34" stroke-linecap="round"/>
-  <path d="M374 188c-20-25-49-38-83-38-56 0-98 45-98 106s42 106 98 106c35 0 66-15 86-42" fill="none" stroke="#a7f3d0" stroke-width="34" stroke-linecap="round"/>
-  <path d="M162 342c66-17 129-46 188-102" fill="none" stroke="#67e8f9" stroke-width="26" stroke-linecap="round"/>
-  <path d="M316 240h48v48" fill="none" stroke="#67e8f9" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect width="180" height="180" fill="url(#bgGradient)"/>
+  <rect x="24" y="24" width="132" height="132" rx="28" fill="none" stroke="#36E6C8" stroke-width="3" opacity=".55"/>
+  <rect x="30" y="30" width="120" height="120" rx="24" fill="none" stroke="#77FFE8" stroke-width="2" opacity=".18"/>
+  <g transform="translate(-5 0)">
+    <path d="M66 42 C66 38, 69 35, 73 35 H94 C114 35, 127 47, 127 63 C127 75, 120 83, 109 88 C123 92, 132 103, 132 117 C132 136, 117 148, 93 148 H73 C69 148, 66 145, 66 141 Z" fill="url(#markGradient)"/>
+    <path d="M81 52 H94 C104 52, 110 58, 110 67 C110 75, 104 81, 94 81 H81 Z" fill="#0B2F2B" opacity=".96"/>
+    <path d="M81 99 H97 C108 99, 115 106, 115 116 C115 126, 108 132, 97 132 H81 Z" fill="#0B2F2B" opacity=".96"/>
+    <path d="M49 116 L65 101 L80 112 L101 90 L117 101 L136 81" fill="none" stroke="#37E6C8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".95"/>
+    <circle cx="129" cy="63" r="7" fill="#9FFFF0" opacity=".9"/>
+  </g>
 </svg>
