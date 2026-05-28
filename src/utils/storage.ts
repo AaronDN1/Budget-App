@@ -38,6 +38,8 @@ export const loadData = (): AppData => {
   }
 };
 
+export const hasLocalData = () => Boolean(localStorage.getItem(STORAGE_KEY));
+
 export const saveData = (data: AppData) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };

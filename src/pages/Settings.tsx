@@ -3,17 +3,21 @@ import { ChangeEvent, useMemo, useRef, useState } from "react";
 import { BUDGET_MODES } from "../data/defaultBudgetModes";
 import { AppData, BudgetModeName, CustomAllocation, FundName } from "../types";
 import { generateMonthlySnapshot } from "../utils/calculations";
-import { exportData, importData, resetData } from "../utils/storage";
 
 interface SettingsProps {
   data: AppData;
   setData: (updater: (data: AppData) => AppData) => void;
   replaceData: (data: AppData) => void;
+  userEmail?: string;
+  signOut: () => Promise<void>;
+  exportCloudData: () => Blob;
+  importCloudData: (file: File) => Promise<void>;
+  resetCloudData: () => Promise<void>;
 }
 
 const fundOrder: FundName[] = ["Savings", "Real Estate", "Retirement", "Stocks", "Travel", "Fun Fund"];
 
-export default function Settings({ data, setData, replaceData }: SettingsProps) {
+export default function Settings({ data, setData, userEmail, signOut, exportCloudData, importCloudData, resetCloudData }: SettingsProps) {
   const [custom, setCustom] = useState<CustomAllocation>(data.settings.customAllocation);
   const [message, setMessage] = useState("");
   const importRef = useRef<HTMLInputElement>(null);
@@ -34,11 +38,11 @@ export default function Settings({ data, setData, replaceData }: SettingsProps) 
   };
 
   const downloadData = () => {
-    const blob = exportData(data);
+    const blob = exportCloudData();
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "budget-command-center-data.json";
+      link.download = "budget-command-center-data.json";
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -47,8 +51,8 @@ export default function Settings({ data, setData, replaceData }: SettingsProps) 
     const file = event.target.files?.[0];
     if (!file) return;
     try {
-      replaceData(await importData(file));
-      setMessage("Data imported successfully.");
+      await importCloudData(file);
+      setMessage("Cloud data imported successfully.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Import failed.");
     } finally {
@@ -61,9 +65,10 @@ export default function Settings({ data, setData, replaceData }: SettingsProps) 
     setMessage("Monthly snapshot saved.");
   };
 
-  const reset = () => {
+  const reset = async () => {
     if (!window.confirm("Reset all budget data? This cannot be undone.")) return;
-    replaceData(resetData());
+    await resetCloudData();
+    setMessage("Cloud data reset.");
   };
 
   return (
@@ -72,6 +77,16 @@ export default function Settings({ data, setData, replaceData }: SettingsProps) 
         <p className="text-sm font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400">Settings</p>
         <h2 className="mt-1 text-3xl font-black">Tune the system</h2>
       </header>
+
+      <section className="panel p-5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-bold">Cloud account</h3>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{userEmail || "Signed in"}</p>
+          </div>
+          <button className="btn-secondary" type="button" onClick={signOut}>Sign Out</button>
+        </div>
+      </section>
 
       <section className="panel p-5">
         <h3 className="text-lg font-bold">Budget mode</h3>
@@ -135,9 +150,9 @@ export default function Settings({ data, setData, replaceData }: SettingsProps) 
         <h3 className="text-lg font-bold">Data</h3>
         <div className="mt-4 flex flex-wrap gap-3">
           <button className="btn-secondary" type="button" onClick={snapshot}>Save Monthly Snapshot</button>
-          <button className="btn-secondary" type="button" onClick={downloadData}><Download className="h-4 w-4" /> Export JSON</button>
-          <button className="btn-secondary" type="button" onClick={() => importRef.current?.click()}><Upload className="h-4 w-4" /> Import JSON</button>
-          <button className="btn-danger" type="button" onClick={reset}><RotateCcw className="h-4 w-4" /> Reset All Data</button>
+          <button className="btn-secondary" type="button" onClick={downloadData}><Download className="h-4 w-4" /> Export Cloud JSON</button>
+          <button className="btn-secondary" type="button" onClick={() => importRef.current?.click()}><Upload className="h-4 w-4" /> Import JSON to Cloud</button>
+          <button className="btn-danger" type="button" onClick={reset}><RotateCcw className="h-4 w-4" /> Reset Cloud Data</button>
           <input ref={importRef} className="hidden" type="file" accept="application/json" onChange={uploadData} />
         </div>
         {message && <p className="mt-3 text-sm font-semibold text-blue-600 dark:text-blue-300">{message}</p>}

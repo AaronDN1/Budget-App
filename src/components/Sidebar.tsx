@@ -1,4 +1,4 @@
-import { BarChart3, CreditCard, Gauge, Landmark, PiggyBank, Settings, WalletCards } from "lucide-react";
+import { BarChart3, CreditCard, Gauge, Landmark, LogOut, PiggyBank, Settings, WalletCards } from "lucide-react";
 
 export type PageKey = "dashboard" | "income" | "expenses" | "subscriptions" | "funds" | "reports" | "settings";
 
@@ -15,9 +15,11 @@ const navItems = [
 interface SidebarProps {
   activePage: PageKey;
   setActivePage: (page: PageKey) => void;
+  userEmail?: string;
+  onSignOut?: () => void;
 }
 
-export default function Sidebar({ activePage, setActivePage }: SidebarProps) {
+export default function Sidebar({ activePage, setActivePage, userEmail, onSignOut }: SidebarProps) {
   return (
     <aside className="border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90 lg:min-h-screen lg:w-72 lg:border-b-0 lg:border-r">
       <div className="flex items-center justify-between px-4 py-4 lg:block lg:px-6">
@@ -46,6 +48,15 @@ export default function Sidebar({ activePage, setActivePage }: SidebarProps) {
           );
         })}
       </nav>
+      <div className="hidden px-4 pb-5 lg:mt-auto lg:block">
+        {userEmail && <p className="mb-3 truncate text-xs font-semibold text-slate-500 dark:text-slate-400">{userEmail}</p>}
+        {onSignOut && (
+          <button className="btn-secondary w-full" type="button" onClick={onSignOut}>
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </button>
+        )}
+      </div>
     </aside>
   );
 }
