@@ -162,6 +162,16 @@
   }
 }
 
+@keyframes coin-drop {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-6deg);
+  }
+  50% {
+    transform: translateY(12px) rotate(4deg);
+  }
+}
+
 .landing-grid {
   background-image:
     linear-gradient(color-mix(in srgb, var(--border) 45%, transparent) 1px, transparent 1px),
@@ -181,6 +191,11 @@
 .trend-line {
   stroke-dasharray: 360;
   animation: trend-draw 3s ease-out both;
+}
+
+.coin-drop {
+  transform-origin: 205px 45px;
+  animation: coin-drop 4.8s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,5 +1,6 @@
 import { ArrowRight, BarChart3, Cloud, CreditCard, LineChart, PiggyBank, ShieldCheck, Smartphone } from "lucide-react";
 import Logo from "../components/Logo";
+import PiggyBankHeroGraphic from "../components/PiggyBankHeroGraphic";
 
 interface LandingProps {
   navigate: (path: string) => void;
@@ -23,7 +24,7 @@ const funds = [
   ["Fun Fund", 5, "bg-rose-500"],
 ] as const;
 
-const ticker = ["Savings +12%", "Real Estate Fund", "Subscriptions", "Safe to Spend", "Retirement +20%", "Cloud Sync", "Budget Health 92"];
+const heroChips = ["Smart Allocation", "Subscription Control", "Goal Funds"];
 
 export default function Landing({ navigate }: LandingProps) {
   return (
@@ -47,9 +48,12 @@ export default function Landing({ navigate }: LandingProps) {
           <div className="w-fit rounded-full border border-[color:var(--border)] bg-[color:var(--card)] px-3 py-1 text-sm font-black text-[color:var(--primary)] shadow-sm">
             Personal finance command center
           </div>
-          <h1 className="mt-6 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight text-[color:var(--text)] sm:text-6xl lg:text-7xl">
-            Command your money before it disappears.
-          </h1>
+          <div className="mt-6 grid items-center gap-5 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_21rem]">
+            <h1 className="max-w-3xl text-4xl font-black leading-[1.02] tracking-tight text-[color:var(--text)] sm:text-6xl lg:text-7xl">
+              Command your money before it disappears.
+            </h1>
+            <PiggyBankHeroGraphic />
+          </div>
           <p className="mt-5 max-w-2xl text-base leading-7 text-[color:var(--muted)] sm:text-lg sm:leading-8">
             BudgetCommand turns your income, expenses, subscriptions, and goals into a clear monthly money plan.
           </p>
@@ -60,14 +64,12 @@ export default function Landing({ navigate }: LandingProps) {
             <button className="btn-secondary w-full text-base sm:w-auto" type="button" onClick={() => navigate("/login")}>Sign In</button>
           </div>
 
-          <div className="mt-8 overflow-hidden rounded-lg border border-[color:var(--border)] bg-[color:var(--card)] py-2">
-            <div className="ticker-track flex w-[200%] gap-3 whitespace-nowrap px-3">
-              {[...ticker, ...ticker].map((item, index) => (
-                <span key={`${item}-${index}`} className="rounded-full bg-[color:var(--accent-soft)] px-3 py-1 text-xs font-black text-[color:var(--text)]">
-                  {item}
-                </span>
-              ))}
-            </div>
+          <div className="mt-7 flex flex-wrap gap-2">
+            {heroChips.map((item) => (
+              <span key={item} className="rounded-full border border-[color:var(--border)] bg-[color:var(--card)] px-3 py-1.5 text-xs font-black text-[color:var(--text)] shadow-sm">
+                {item}
+              </span>
+            ))}
           </div>
         </div>
 
