@@ -2,7 +2,8 @@ export type PayFrequency = "weekly" | "biweekly" | "semi-monthly" | "monthly" | 
 export type ExpenseType = "fixed" | "variable";
 export type SubscriptionCycle = "weekly" | "monthly" | "yearly" | "one-time";
 export type BudgetModeName = "Balanced" | "Aggressive Wealth" | "Safety" | "Lifestyle" | "Custom";
-export type FundName = "Travel" | "Savings" | "Real Estate" | "Retirement" | "Stocks" | "Fun Fund";
+export type CoreFundName = "Travel" | "Savings" | "Real Estate" | "Retirement" | "Stocks" | "Fun Fund";
+export type FundName = CoreFundName | string;
 
 export interface IncomeSource {
   id: string;
@@ -56,7 +57,7 @@ export interface Fund {
   history: FundContribution[];
 }
 
-export type CustomAllocation = Record<FundName, number>;
+export type CustomAllocation = Record<CoreFundName, number>;
 
 export interface BudgetMode {
   name: BudgetModeName;
@@ -77,6 +78,7 @@ export interface MonthlySnapshot {
 export interface AppSettings {
   budgetMode: BudgetModeName;
   customAllocation: CustomAllocation;
+  hasChosenBudgetMode: boolean;
   theme: ThemeId;
   currencySymbol: string;
   budgetMonthStartDay: number;

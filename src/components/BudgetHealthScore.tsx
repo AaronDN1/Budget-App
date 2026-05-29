@@ -8,10 +8,10 @@ export default function BudgetHealthScore({ score }: { score: number }) {
     <div className="panel p-5">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Budget Health</p>
-          <p className="mt-1 text-2xl font-bold text-slate-950 dark:text-white">{score}/100</p>
+          <p className="text-sm font-medium text-[color:var(--muted)]">Budget Health</p>
+          <p className="mt-1 text-2xl font-bold">{score}/100</p>
         </div>
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+        <span className="rounded-full bg-[color:var(--bg-soft)] px-3 py-1 text-sm font-semibold text-[color:var(--text)]">
           {label}
         </span>
       </div>

@@ -1,7 +1,7 @@
 import { BarChart3, CreditCard, Gauge, Landmark, LogOut, PiggyBank, Settings, WalletCards } from "lucide-react";
 import Logo from "./Logo";
 
-export type PageKey = "dashboard" | "income" | "expenses" | "subscriptions" | "funds" | "reports" | "settings";
+export type PageKey = "dashboard" | "income" | "expenses" | "subscriptions" | "funds" | "paycheckPlanner" | "reports" | "settings";
 
 const navItems = [
   { key: "dashboard", label: "Dashboard", icon: Gauge },
@@ -9,6 +9,7 @@ const navItems = [
   { key: "expenses", label: "Expenses", icon: CreditCard },
   { key: "subscriptions", label: "Subscriptions", icon: Landmark },
   { key: "funds", label: "Funds", icon: PiggyBank },
+  { key: "paycheckPlanner", label: "Paycheck Planner", icon: WalletCards },
   { key: "reports", label: "Reports", icon: BarChart3 },
   { key: "settings", label: "Settings", icon: Settings },
 ] as const;

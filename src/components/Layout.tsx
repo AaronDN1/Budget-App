@@ -12,7 +12,17 @@ interface LayoutProps {
 }
 
 export default function Layout({ activePage, setActivePage, userEmail, onSignOut, children }: LayoutProps) {
-  const title = activePage.charAt(0).toUpperCase() + activePage.slice(1);
+  const titles: Record<PageKey, string> = {
+    dashboard: "Dashboard",
+    income: "Income",
+    expenses: "Expenses",
+    subscriptions: "Subscriptions",
+    funds: "Funds",
+    paycheckPlanner: "Paycheck Planner",
+    reports: "Reports",
+    settings: "Settings",
+  };
+  const title = titles[activePage];
   return (
     <div className="theme-page min-h-screen lg:flex">
       <MobileHeader title={title} userEmail={userEmail} onSignOut={onSignOut} />

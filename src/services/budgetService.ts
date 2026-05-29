@@ -330,6 +330,8 @@ export const loadCloudBudgetData = async (userId: string, fallback: AppData): Pr
     getFunds(userId),
     getMonthlySnapshots(userId),
   ]);
+  const hasMeaningfulBudgetData = incomeSources.length > 0 || expenses.length > 0 || subscriptions.length > 0 || monthlySnapshots.length > 0;
+  const hasChosenBudgetMode = Boolean(profile.selected_budget_mode) || Boolean(fallback.settings.hasChosenBudgetMode) || hasMeaningfulBudgetData;
   return {
     incomeSources,
     expenses,
@@ -339,6 +341,7 @@ export const loadCloudBudgetData = async (userId: string, fallback: AppData): Pr
     settings: {
       budgetMode: profile.selected_budget_mode || fallback.settings.budgetMode,
       customAllocation: profile.custom_allocations || fallback.settings.customAllocation,
+      hasChosenBudgetMode,
       theme: normalizeTheme(profile.theme || fallback.settings.theme),
       currencySymbol: profile.currency || fallback.settings.currencySymbol,
       budgetMonthStartDay: profile.budget_month_start_day || fallback.settings.budgetMonthStartDay,
@@ -350,7 +353,7 @@ export const replaceCloudBudgetData = async (userId: string, data: AppData) => {
   await updateProfile(userId, {
     currency: data.settings.currencySymbol,
     budget_month_start_day: data.settings.budgetMonthStartDay,
-    selected_budget_mode: data.settings.budgetMode,
+    selected_budget_mode: data.settings.hasChosenBudgetMode ? data.settings.budgetMode : null,
     theme: data.settings.theme,
     custom_allocations: data.settings.customAllocation,
   });
@@ -458,6 +461,7 @@ export const resetCloudBudgetData = async (userId: string) => {
       theme: DEFAULT_THEME,
       currencySymbol: "$",
       budgetMonthStartDay: 1,
+      hasChosenBudgetMode: false,
     },
     monthlySnapshots: [],
   });

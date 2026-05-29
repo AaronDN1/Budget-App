@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Expenses from "./pages/Expenses";
 import Funds from "./pages/Funds";
 import Income from "./pages/Income";
+import PaycheckPlanner from "./pages/PaycheckPlanner";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Subscriptions from "./pages/Subscriptions";
@@ -31,6 +32,7 @@ const pageToPath: Record<PageKey, string> = {
   expenses: "/app/expenses",
   subscriptions: "/app/subscriptions",
   funds: "/app/funds",
+  paycheckPlanner: "/app/paycheck-planner",
   reports: "/app/reports",
   settings: "/app/settings",
 };
@@ -112,6 +114,7 @@ function SignedInApp({
     exportCloudData,
     importCloudData,
     resetCloudData,
+    saveMonthlySnapshot,
   } = useBudgetData();
   const activePage = pathToPage(path);
 
@@ -137,11 +140,12 @@ function SignedInApp({
   const setActivePage = (page: PageKey) => navigate(pageToPath[page]);
 
   const page = {
-    dashboard: <Dashboard data={data} metrics={metrics} onNavigate={setActivePage} />,
+    dashboard: <Dashboard data={data} metrics={metrics} onNavigate={setActivePage} onSaveSnapshot={saveMonthlySnapshot} />,
     income: <Income data={data} setData={setData} />,
     expenses: <Expenses data={data} setData={setData} />,
     subscriptions: <Subscriptions data={data} setData={setData} />,
     funds: <Funds data={data} setData={setData} allocations={metrics.allocations} allocationPercentages={metrics.allocationPercentages} />,
+    paycheckPlanner: <PaycheckPlanner data={data} allocationPercentages={metrics.allocationPercentages} />,
     reports: <Reports data={data} metrics={metrics} />,
     settings: (
       <Settings
@@ -153,6 +157,7 @@ function SignedInApp({
         exportCloudData={exportCloudData}
         importCloudData={importCloudData}
         resetCloudData={resetCloudData}
+        saveMonthlySnapshot={saveMonthlySnapshot}
       />
     ),
   }[activePage];
@@ -165,7 +170,7 @@ function SignedInApp({
     <>
       <Layout activePage={activePage} setActivePage={setActivePage} userEmail={userEmail} onSignOut={signOut}>
         {(saving || error) && (
-          <div className={`mb-4 rounded-lg px-4 py-3 text-sm font-semibold ${error ? "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-200" : "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-200"}`}>
+          <div className={`mb-4 rounded-lg border border-[color:var(--border)] bg-[color:var(--bg-soft)] px-4 py-3 text-sm font-semibold ${error ? "text-[color:var(--danger)]" : "text-[color:var(--primary)]"}`}>
             {error || "Saving to cloud..."}
           </div>
         )}

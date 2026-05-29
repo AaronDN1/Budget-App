@@ -36,7 +36,7 @@ export default function Expenses({ data, setData }: ExpensesProps) {
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-sm font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400">Expenses</p>
+        <p className="text-sm font-bold uppercase tracking-widest text-[color:var(--primary)]">Expenses</p>
         <h2 className="mt-1 text-3xl font-black">Monthly expenses: {formatCurrency(calculateMonthlyExpenseTotal(data.expenses), currency)}</h2>
       </header>
       <ExpenseForm editing={editing} onSave={saveExpense} onCancel={() => setEditing(null)} />
@@ -56,14 +56,14 @@ export default function Expenses({ data, setData }: ExpensesProps) {
           </select>
         </div>
         {filtered.length === 0 ? (
-          <p className="mt-5 rounded-lg border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">No expenses added yet.</p>
+          <p className="mt-5 rounded-lg border border-dashed border-[color:var(--border)] p-4 text-sm text-[color:var(--muted)]">No expenses added yet.</p>
         ) : (
           <div className="mt-5 grid gap-3">
             {filtered.map((expense) => (
-              <div key={expense.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 p-4 dark:border-slate-800">
+              <div key={expense.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[color:var(--border)] p-4">
                 <div>
                   <p className="font-bold">{expense.name}</p>
-                  <p className="text-sm text-slate-500">{expense.category} | {expense.type} | {expense.recurring ? "recurring" : "one-time"}</p>
+                  <p className="text-sm text-[color:var(--muted)]">{expense.category} | {expense.type} | {expense.recurring ? "recurring" : "one-time"}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <p className="mr-2 text-lg font-black">{formatCurrency(expense.amount, currency)}</p>

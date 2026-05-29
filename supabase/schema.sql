@@ -15,7 +15,7 @@ create table if not exists public.profiles (
   user_id uuid references auth.users(id) on delete cascade not null unique,
   currency text default '$',
   budget_month_start_day integer default 1,
-  selected_budget_mode text default 'Balanced',
+  selected_budget_mode text,
   theme text default 'light',
   custom_allocations jsonb,
   local_migration_completed boolean default false,

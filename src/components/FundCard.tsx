@@ -5,15 +5,19 @@ import ProgressBar from "./ProgressBar";
 
 interface FundCardProps {
   fund: Fund;
-  recommended: number;
-  allocationPercent: number;
+  recommended?: number;
+  allocationPercent?: number;
   currencySymbol: string;
-  onUpdate: (fund: Fund) => void;
+  onUpdate: (fund: Fund, previousName: string) => void;
+  onDelete?: (fundName: string) => void;
+  isCore: boolean;
 }
 
-export default function FundCard({ fund, recommended, allocationPercent, currencySymbol, onUpdate }: FundCardProps) {
+export default function FundCard({ fund, recommended = 0, allocationPercent = 0, currencySymbol, onUpdate, onDelete, isCore }: FundCardProps) {
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
+  const [name, setName] = useState(fund.name);
+  const [description, setDescription] = useState(fund.description);
   const [balance, setBalance] = useState(String(fund.balance));
   const [goal, setGoal] = useState(fund.goalAmount ? String(fund.goalAmount) : "");
   const progress = fund.goalAmount ? (fund.balance / fund.goalAmount) * 100 : 0;
@@ -32,7 +36,7 @@ export default function FundCard({ fund, recommended, allocationPercent, currenc
       balance: newBalance,
       totalContributed: type === "contribution" ? fund.totalContributed + value : fund.totalContributed,
       history: [entry, ...fund.history],
-    });
+    }, fund.name);
     setAmount("");
     setNote("");
   };
@@ -51,6 +55,8 @@ export default function FundCard({ fund, recommended, allocationPercent, currenc
   };
 
   const saveDetails = () => {
+    const nextName = isCore ? fund.name : name.trim();
+    if (!nextName) return;
     const nextBalance = Number(balance);
     const nextGoal = goal === "" ? undefined : Number(goal);
     if (!Number.isFinite(nextBalance) || (nextGoal !== undefined && (!Number.isFinite(nextGoal) || nextGoal < 0))) return;
@@ -64,24 +70,33 @@ export default function FundCard({ fund, recommended, allocationPercent, currenc
     };
     onUpdate({
       ...fund,
+      name: nextName,
+      description: description.trim(),
       balance: nextBalance,
       goalAmount: nextGoal,
-      history: nextBalance !== fund.balance ? [entry, ...fund.history] : fund.history,
-    });
+      history: (nextBalance !== fund.balance ? [entry, ...fund.history] : fund.history).map((item) => ({ ...item, fundName: nextName })),
+    }, fund.name);
   };
 
   return (
     <article className="panel p-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h3 className="text-lg font-bold text-slate-950 dark:text-white">{fund.name}</h3>
-          <p className="mt-1 max-w-xl text-sm text-slate-500 dark:text-slate-400">{fund.description}</p>
+          <h3 className="text-lg font-bold">{fund.name}</h3>
+          <p className="mt-1 max-w-xl text-sm text-[color:var(--muted)]">{fund.description}</p>
+          {!isCore && <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--muted)]">Custom fund</p>}
         </div>
-        <div className="rounded-lg bg-blue-50 px-3 py-2 text-right dark:bg-blue-950">
-          <p className="text-xs font-semibold text-blue-700 dark:text-blue-300">{allocationPercent}% allocation</p>
-          <p className="font-bold text-blue-900 dark:text-blue-100">{formatCurrency(recommended, currencySymbol)}</p>
+        <div className="rounded-lg bg-[color:var(--accent-soft)] px-3 py-2 text-right">
+          <p className="text-xs font-semibold text-[color:var(--primary)]">{allocationPercent}% allocation</p>
+          <p className="font-bold text-[color:var(--text)]">{formatCurrency(recommended, currencySymbol)}</p>
         </div>
       </div>
+
+      {!isCore && (
+        <p className="mt-3 rounded-lg border border-dashed border-[color:var(--border)] p-3 text-sm text-[color:var(--muted)]">
+          Custom funds are tracked separately and are not included in preset budget mode allocations.
+        </p>
+      )}
 
       <div className="mt-5 grid gap-4 sm:grid-cols-3">
         <div>
@@ -101,14 +116,16 @@ export default function FundCard({ fund, recommended, allocationPercent, currenc
       {fund.goalAmount && (
         <div className="mt-4">
           <ProgressBar value={progress} tone="green" />
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{Math.min(100, progress).toFixed(1)}% funded</p>
+          <p className="mt-1 text-xs text-[color:var(--muted)]">{Math.min(100, progress).toFixed(1)}% funded</p>
         </div>
       )}
 
       <div className="mt-5 grid gap-3 md:grid-cols-4">
+        <input className="field" value={name} onChange={(e) => setName(e.target.value)} disabled={isCore} aria-label={`${fund.name} name`} />
+        <input className="field md:col-span-3" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" aria-label={`${fund.name} description`} />
         <input className="field" type="number" step="0.01" value={balance} onChange={(e) => setBalance(e.target.value)} aria-label={`${fund.name} balance`} />
         <input className="field" type="number" step="0.01" value={goal} onChange={(e) => setGoal(e.target.value)} placeholder="Goal amount" aria-label={`${fund.name} goal`} />
-        <button className="btn-secondary md:col-span-2" type="button" onClick={saveDetails}>Save Balance and Goal</button>
+        <button className="btn-secondary md:col-span-2" type="button" onClick={saveDetails}>Save Fund Details</button>
       </div>
 
       <form className="mt-4 grid gap-3 md:grid-cols-5" onSubmit={contribute}>
@@ -121,13 +138,13 @@ export default function FundCard({ fund, recommended, allocationPercent, currenc
       <div className="mt-5">
         <p className="label">Contribution History</p>
         {fund.history.length === 0 ? (
-          <p className="mt-3 rounded-lg border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">No contributions recorded yet.</p>
+          <p className="mt-3 rounded-lg border border-dashed border-[color:var(--border)] p-4 text-sm text-[color:var(--muted)]">No contributions recorded yet.</p>
         ) : (
           <div className="mt-3 max-h-40 space-y-2 overflow-auto">
             {fund.history.map((entry) => (
-              <div key={entry.id} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm dark:bg-slate-950">
+              <div key={entry.id} className="flex items-center justify-between rounded-lg bg-[color:var(--bg-soft)] px-3 py-2 text-sm">
                 <span className="font-medium capitalize">{entry.type.replace("-", " ")}</span>
-                <span className={entry.type === "withdrawal" ? "font-bold text-red-600" : "font-bold text-emerald-600"}>
+                <span className={entry.type === "withdrawal" ? "font-bold text-[color:var(--danger)]" : "font-bold text-[color:var(--success)]"}>
                   {entry.type === "withdrawal" ? "-" : "+"}{formatCurrency(Math.abs(entry.amount), currencySymbol)}
                 </span>
               </div>
@@ -135,6 +152,12 @@ export default function FundCard({ fund, recommended, allocationPercent, currenc
           </div>
         )}
       </div>
+
+      {!isCore && onDelete && (
+        <button className="btn-danger mt-5" type="button" onClick={() => onDelete(fund.name)}>
+          Delete Custom Fund
+        </button>
+      )}
     </article>
   );
 }

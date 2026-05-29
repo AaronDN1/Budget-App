@@ -1,4 +1,8 @@
-import { BudgetMode, CustomAllocation, Fund } from "../types";
+import { BudgetMode, CoreFundName, CustomAllocation, Fund } from "../types";
+
+export const CORE_FUND_NAMES: CoreFundName[] = ["Savings", "Real Estate", "Retirement", "Stocks", "Travel", "Fun Fund"];
+
+export const isCoreFund = (name: string): name is CoreFundName => CORE_FUND_NAMES.includes(name as CoreFundName);
 
 export const DEFAULT_ALLOCATIONS: Record<BudgetMode["name"], CustomAllocation> = {
   Balanced: {

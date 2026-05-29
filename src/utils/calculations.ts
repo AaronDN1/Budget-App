@@ -2,6 +2,7 @@ import { DEFAULT_ALLOCATIONS } from "../data/defaultBudgetModes";
 import {
   AppData,
   BudgetModeName,
+  CoreFundName,
   CustomAllocation,
   Expense,
   FundName,
@@ -80,9 +81,18 @@ export const calculateFundAllocations = (
       ...result,
       [fundName]: availableToAllocate > 0 ? (availableToAllocate * percentage) / 100 : 0,
     }),
-    {} as Record<FundName, number>,
+    {} as Record<CoreFundName, number>,
   );
 };
+
+export const calculatePaycheckPlan = (amount: number, allocationPercentages: Record<CoreFundName, number>) =>
+  (Object.entries(allocationPercentages) as Array<[CoreFundName, number]>).reduce(
+    (plan, [fundName, percentage]) => ({
+      ...plan,
+      [fundName]: amount > 0 ? (amount * percentage) / 100 : 0,
+    }),
+    {} as Record<CoreFundName, number>,
+  );
 
 export const calculateBudgetHealthScore = (
   income: number,

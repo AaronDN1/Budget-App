@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { AppData } from "../types";
+import { AppData, MonthlySnapshot } from "../types";
 import { hasLocalData, loadData } from "../utils/storage";
 import { applyTheme } from "../data/themes";
 import { useAuth } from "./AuthContext";
@@ -9,6 +9,7 @@ import {
   markLocalMigrationComplete,
   replaceCloudBudgetData,
   resetCloudBudgetData,
+  saveMonthlySnapshot as saveMonthlySnapshotToCloud,
 } from "../services/budgetService";
 
 interface BudgetDataContextValue {
@@ -26,6 +27,7 @@ interface BudgetDataContextValue {
   exportCloudData: () => Blob;
   importCloudData: (file: File) => Promise<void>;
   resetCloudData: () => Promise<void>;
+  saveMonthlySnapshot: (snapshot: MonthlySnapshot) => Promise<void>;
 }
 
 const BudgetDataContext = createContext<BudgetDataContextValue | undefined>(undefined);
@@ -132,6 +134,12 @@ export function BudgetDataProvider({ children }: { children: ReactNode }) {
       const text = await file.text();
       const imported = JSON.parse(text) as AppData;
       if (!imported.settings || !Array.isArray(imported.funds)) throw new Error("Invalid budget data file.");
+      imported.settings = {
+        ...imported.settings,
+        hasChosenBudgetMode:
+          imported.settings.hasChosenBudgetMode ??
+          Boolean(imported.incomeSources.length || imported.expenses.length || imported.subscriptions.length || imported.monthlySnapshots.length),
+      };
       await replaceCloudBudgetData(user.id, imported);
       setDataState(imported);
     },
@@ -143,6 +151,24 @@ export function BudgetDataProvider({ children }: { children: ReactNode }) {
     await resetCloudBudgetData(user.id);
     await refresh();
   }, [refresh, user]);
+
+  const saveMonthlySnapshot = useCallback(
+    async (snapshot: MonthlySnapshot) => {
+      if (!user) return;
+      setSaving(true);
+      setError("");
+      try {
+        await saveMonthlySnapshotToCloud(user.id, snapshot);
+        setDataState((current) => ({ ...current, monthlySnapshots: [snapshot, ...current.monthlySnapshots].slice(0, 36) }));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Could not save monthly snapshot.");
+        throw err;
+      } finally {
+        setSaving(false);
+      }
+    },
+    [user],
+  );
 
   const value = useMemo<BudgetDataContextValue>(
     () => ({
@@ -160,8 +186,9 @@ export function BudgetDataProvider({ children }: { children: ReactNode }) {
       exportCloudData: () => new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }),
       importCloudData,
       resetCloudData,
+      saveMonthlySnapshot,
     }),
-    [data, error, importCloudData, importLocalData, loading, needsMigration, refresh, replaceData, resetCloudData, saving, setData, skipLocalMigration],
+    [data, error, importCloudData, importLocalData, loading, needsMigration, refresh, replaceData, resetCloudData, saveMonthlySnapshot, saving, setData, skipLocalMigration],
   );
 
   return <BudgetDataContext.Provider value={value}>{children}</BudgetDataContext.Provider>;

@@ -12,6 +12,7 @@ export const createDefaultData = (): AppData => ({
   settings: {
     budgetMode: "Balanced",
     customAllocation: DEFAULT_ALLOCATIONS.Custom,
+    hasChosenBudgetMode: false,
     theme: DEFAULT_THEME,
     currencySymbol: "$",
     budgetMonthStartDay: 1,
@@ -25,14 +26,23 @@ export const loadData = (): AppData => {
     if (!raw) return createDefaultData();
     const parsed = JSON.parse(raw) as Partial<AppData>;
     const defaults = createDefaultData();
+    const hasMeaningfulData = Boolean(parsed.incomeSources?.length || parsed.expenses?.length || parsed.subscriptions?.length || parsed.monthlySnapshots?.length);
     return {
       ...defaults,
       ...parsed,
-      settings: { ...defaults.settings, ...parsed.settings, theme: normalizeTheme(parsed.settings?.theme) },
-      funds: defaults.funds.map((defaultFund) => {
+      settings: {
+        ...defaults.settings,
+        ...parsed.settings,
+        hasChosenBudgetMode: parsed.settings?.hasChosenBudgetMode ?? hasMeaningfulData,
+        theme: normalizeTheme(parsed.settings?.theme),
+      },
+      funds: [
+        ...defaults.funds.map((defaultFund) => {
         const savedFund = parsed.funds?.find((fund) => fund.name === defaultFund.name);
         return { ...defaultFund, ...savedFund, history: savedFund?.history || [] };
-      }),
+        }),
+        ...(parsed.funds || []).filter((fund) => !defaults.funds.some((defaultFund) => defaultFund.name === fund.name)),
+      ],
     };
   } catch {
     return createDefaultData();
