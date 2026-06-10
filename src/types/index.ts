@@ -82,6 +82,7 @@ export interface AppSettings {
   theme: ThemeId;
   currencySymbol: string;
   budgetMonthStartDay: number;
+  hasReviewedFundAllocation: boolean;
 }
 
 export interface AppData {

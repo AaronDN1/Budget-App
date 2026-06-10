@@ -5,6 +5,7 @@ import { normalizeTheme, ThemeId } from "../data/themes";
 import { AppData, BudgetModeName, CustomAllocation, MonthlySnapshot } from "../types";
 import { generateMonthlySnapshot } from "../utils/calculations";
 import ThemeSelector from "../components/ThemeSelector";
+import { trackEvent } from "../lib/analytics";
 
 interface SettingsProps {
   data: AppData;
@@ -47,9 +48,10 @@ export default function Settings({ data, setData, userEmail, signOut, exportClou
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-      link.download = "budget-command-center-data.json";
+    link.download = "budget-command-center-data.json";
     link.click();
     URL.revokeObjectURL(url);
+    trackEvent("backup_downloaded");
   };
 
   const uploadData = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -75,6 +77,7 @@ export default function Settings({ data, setData, userEmail, signOut, exportClou
     try {
       await saveMonthlySnapshot(nextSnapshot);
       setMessage("This month's progress was saved.");
+      trackEvent("snapshot_saved");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not save this month's progress.");
     }
@@ -147,7 +150,13 @@ export default function Settings({ data, setData, userEmail, signOut, exportClou
       <section className="panel p-5">
         <h3 className="text-lg font-bold">Preferences</h3>
         <div className="mt-4">
-          <ThemeSelector value={normalizeTheme(data.settings.theme)} onChange={(theme: ThemeId) => updateSetting("theme", theme)} />
+          <ThemeSelector
+            value={normalizeTheme(data.settings.theme)}
+            onChange={(theme: ThemeId) => {
+              updateSetting("theme", theme);
+              trackEvent("theme_changed", { theme });
+            }}
+          />
         </div>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           <label>

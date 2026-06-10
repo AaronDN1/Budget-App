@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AppData, MonthlySnapshot } from "../types";
 import { hasLocalData, loadData } from "../utils/storage";
+import { validateBudgetBackupFile } from "../utils/backupValidation";
 import { applyTheme } from "../data/themes";
 import { useAuth } from "./AuthContext";
 import {
@@ -55,7 +56,7 @@ export function BudgetDataProvider({ children }: { children: ReactNode }) {
       setNeedsMigration(hasLocalData() && !profile.local_migration_completed);
       readyToSync.current = true;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not load cloud budget data.");
+      setError("Could not load cloud budget data.");
     } finally {
       setLoading(false);
     }
@@ -79,7 +80,7 @@ export function BudgetDataProvider({ children }: { children: ReactNode }) {
         try {
           await replaceCloudBudgetData(user.id, nextData);
         } catch (err) {
-          setError(err instanceof Error ? err.message : "Could not save budget data.");
+          setError("Could not save budget data.");
         } finally {
           setSaving(false);
         }
@@ -131,15 +132,7 @@ export function BudgetDataProvider({ children }: { children: ReactNode }) {
   const importCloudData = useCallback(
     async (file: File) => {
       if (!user) return;
-      const text = await file.text();
-      const imported = JSON.parse(text) as AppData;
-      if (!imported.settings || !Array.isArray(imported.funds)) throw new Error("Invalid budget data file.");
-      imported.settings = {
-        ...imported.settings,
-        hasChosenBudgetMode:
-          imported.settings.hasChosenBudgetMode ??
-          Boolean(imported.incomeSources.length || imported.expenses.length || imported.subscriptions.length || imported.monthlySnapshots.length),
-      };
+      const imported = await validateBudgetBackupFile(file);
       await replaceCloudBudgetData(user.id, imported);
       setDataState(imported);
     },
@@ -161,7 +154,7 @@ export function BudgetDataProvider({ children }: { children: ReactNode }) {
         await saveMonthlySnapshotToCloud(user.id, snapshot);
         setDataState((current) => ({ ...current, monthlySnapshots: [snapshot, ...current.monthlySnapshots].slice(0, 36) }));
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Could not save monthly snapshot.");
+        setError("Could not save monthly snapshot.");
         throw err;
       } finally {
         setSaving(false);

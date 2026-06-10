@@ -1,6 +1,7 @@
 import { DEFAULT_ALLOCATIONS, DEFAULT_FUNDS } from "../data/defaultBudgetModes";
 import { DEFAULT_THEME, normalizeTheme } from "../data/themes";
 import { AppData } from "../types";
+import { validateBudgetBackupFile } from "./backupValidation";
 
 const STORAGE_KEY = "budget-command-center-data";
 
@@ -16,6 +17,7 @@ export const createDefaultData = (): AppData => ({
     theme: DEFAULT_THEME,
     currencySymbol: "$",
     budgetMonthStartDay: 1,
+    hasReviewedFundAllocation: false,
   },
   monthlySnapshots: [],
 });
@@ -35,6 +37,7 @@ export const loadData = (): AppData => {
         ...parsed.settings,
         hasChosenBudgetMode: parsed.settings?.hasChosenBudgetMode ?? hasMeaningfulData,
         theme: normalizeTheme(parsed.settings?.theme),
+        hasReviewedFundAllocation: parsed.settings?.hasReviewedFundAllocation ?? false,
       },
       funds: [
         ...defaults.funds.map((defaultFund) => {
@@ -59,12 +62,7 @@ export const exportData = (data: AppData) =>
   new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
 
 export const importData = async (file: File): Promise<AppData> => {
-  const text = await file.text();
-  const parsed = JSON.parse(text) as AppData;
-  if (!parsed.settings || !Array.isArray(parsed.funds)) {
-    throw new Error("Invalid budget data file.");
-  }
-  return parsed;
+  return validateBudgetBackupFile(file);
 };
 
 export const resetData = () => {

@@ -1,7 +1,7 @@
 import FundCard from "../components/FundCard";
 import { isCoreFund } from "../data/defaultBudgetModes";
 import { AppData, CoreFundName, Fund } from "../types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface FundsProps {
   data: AppData;
@@ -13,6 +13,17 @@ interface FundsProps {
 export default function Funds({ data, setData, allocations, allocationPercentages }: FundsProps) {
   const [newFund, setNewFund] = useState({ name: "", description: "", balance: "", goalAmount: "" });
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (data.settings.hasReviewedFundAllocation) return;
+    setData((current) => ({
+      ...current,
+      settings: {
+        ...current.settings,
+        hasReviewedFundAllocation: true,
+      },
+    }));
+  }, [data.settings.hasReviewedFundAllocation, setData]);
 
   const updateFund = (fund: Fund, previousName: string) => {
     setData((current) => {

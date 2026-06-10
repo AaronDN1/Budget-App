@@ -1,6 +1,8 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import Logo from "../components/Logo";
+import { useAuthCooldown } from "../lib/authCooldown";
+import { trackEvent } from "../lib/analytics";
 
 interface AuthProps {
   mode: "login" | "signup";
@@ -14,6 +16,7 @@ export default function Auth({ mode, navigate }: AuthProps) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const isSignup = mode === "signup";
+  const cooldown = useAuthCooldown(isSignup ? "signup" : "login");
 
   useEffect(() => {
     if (user) navigate("/app/dashboard");
@@ -21,18 +24,27 @@ export default function Auth({ mode, navigate }: AuthProps) {
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
+    if (cooldown.isCoolingDown) {
+      setMessage(`Too many attempts. Please wait ${cooldown.secondsRemaining} seconds before trying again.`);
+      return;
+    }
     setLoading(true);
     setMessage("");
     try {
       if (isSignup) {
+        trackEvent("sign_up_started");
         await signUp(email, password);
+        cooldown.recordSuccess();
         setMessage("Account created. Check your email if confirmation is enabled, then sign in.");
       } else {
+        trackEvent("login_started");
         await signIn(email, password);
+        cooldown.recordSuccess();
         navigate("/app/dashboard");
       }
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Authentication failed.");
+      cooldown.recordFailure();
+      setMessage(isSignup ? "Please check your email or try again later." : "Invalid email or password.");
     } finally {
       setLoading(false);
     }
@@ -57,7 +69,12 @@ export default function Auth({ mode, navigate }: AuthProps) {
             <input className="field mt-1" type="password" value={password} onChange={(event) => setPassword(event.target.value)} minLength={6} required />
           </label>
           {message && <p className="rounded-lg bg-slate-100 p-3 text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">{message}</p>}
-          <button className="btn-primary w-full" type="submit" disabled={loading}>{loading ? "Working..." : isSignup ? "Create Account" : "Sign In"}</button>
+          {cooldown.isCoolingDown && !message && (
+            <p className="rounded-lg bg-slate-100 p-3 text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+              Too many attempts. Please wait {cooldown.secondsRemaining} seconds before trying again.
+            </p>
+          )}
+          <button className="btn-primary w-full" type="submit" disabled={loading || cooldown.isCoolingDown}>{loading ? "Working..." : isSignup ? "Create Account" : "Sign In"}</button>
         </form>
         <button
           className="mt-5 w-full text-center text-sm font-semibold text-slate-600 hover:text-blue-600 dark:text-slate-300"

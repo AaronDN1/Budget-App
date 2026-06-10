@@ -8,10 +8,11 @@ interface LayoutProps {
   setActivePage: (page: PageKey) => void;
   userEmail?: string;
   onSignOut?: () => void;
+  onOpenLanding?: () => void;
   children: ReactNode;
 }
 
-export default function Layout({ activePage, setActivePage, userEmail, onSignOut, children }: LayoutProps) {
+export default function Layout({ activePage, setActivePage, userEmail, onSignOut, onOpenLanding, children }: LayoutProps) {
   const titles: Record<PageKey, string> = {
     dashboard: "Dashboard",
     income: "Income",
@@ -25,8 +26,8 @@ export default function Layout({ activePage, setActivePage, userEmail, onSignOut
   const title = titles[activePage];
   return (
     <div className="theme-page min-h-screen lg:flex">
-      <MobileHeader title={title} userEmail={userEmail} onSignOut={onSignOut} />
-      <Sidebar activePage={activePage} setActivePage={setActivePage} userEmail={userEmail} onSignOut={onSignOut} />
+      <MobileHeader title={title} userEmail={userEmail} onSignOut={onSignOut} onOpenLanding={onOpenLanding} />
+      <Sidebar activePage={activePage} setActivePage={setActivePage} userEmail={userEmail} onSignOut={onSignOut} onOpenLanding={onOpenLanding} />
       <main className="flex-1 px-4 pb-28 pt-5 sm:px-6 lg:px-8 lg:py-6">
         <div className="mx-auto max-w-7xl">{children}</div>
       </main>

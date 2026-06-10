@@ -10,12 +10,13 @@ interface OnboardingChecklistProps {
 
 export default function OnboardingChecklist({ data, onNavigate }: OnboardingChecklistProps) {
   const hasFundProgress = data.funds.some((fund) => fund.balance > 0 || fund.totalContributed > 0 || fund.goalAmount);
+  const hasReviewedFundAllocation = data.settings.hasReviewedFundAllocation || hasFundProgress;
   const steps: Array<{ label: string; action: string; page: OnboardingPage; complete: boolean; icon: typeof Wallet }> = [
     { label: "Add your income", action: "Add Income", page: "income", complete: data.incomeSources.length > 0, icon: Wallet },
     { label: "Add fixed expenses", action: "Add Expenses", page: "expenses", complete: data.expenses.some((expense) => expense.type === "fixed"), icon: CreditCard },
     { label: "Add subscriptions", action: "Add Subscriptions", page: "subscriptions", complete: data.subscriptions.length > 0, icon: Landmark },
     { label: "Pick a budget mode", action: "Choose Mode", page: "settings", complete: data.settings.hasChosenBudgetMode, icon: Settings },
-    { label: "Review fund allocation", action: "Review Funds", page: "funds", complete: hasFundProgress, icon: PiggyBank },
+    { label: "Review fund allocation", action: "Review Funds", page: "funds", complete: hasReviewedFundAllocation, icon: PiggyBank },
   ];
   const completeCount = steps.filter((step) => step.complete).length;
 

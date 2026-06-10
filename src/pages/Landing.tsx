@@ -1,9 +1,12 @@
 import { ArrowRight, BarChart3, Cloud, CreditCard, LineChart, PiggyBank, ShieldCheck, Smartphone } from "lucide-react";
 import Logo from "../components/Logo";
 import PiggyBankHeroGraphic from "../components/PiggyBankHeroGraphic";
+import { trackEvent } from "../lib/analytics";
 
 interface LandingProps {
   navigate: (path: string) => void;
+  isSignedIn: boolean;
+  onSignOut?: () => Promise<void>;
 }
 
 const features = [
@@ -26,7 +29,12 @@ const funds = [
 
 const heroChips = ["Smart Allocation", "Subscription Control", "Goal Funds"];
 
-export default function Landing({ navigate }: LandingProps) {
+export default function Landing({ navigate, isSignedIn, onSignOut }: LandingProps) {
+  const openApp = () => {
+    trackEvent("landing_cta_clicked", { destination: isSignedIn ? "dashboard" : "signup" });
+    navigate(isSignedIn ? "/app/dashboard" : "/signup");
+  };
+
   return (
     <main className="theme-page relative min-h-screen overflow-hidden">
       <div className="landing-grid pointer-events-none absolute inset-0 opacity-70" aria-hidden="true" />
@@ -38,8 +46,17 @@ export default function Landing({ navigate }: LandingProps) {
           <Logo size="md" />
         </button>
         <div className="hidden gap-3 sm:flex">
-          <button className="btn-secondary" type="button" onClick={() => navigate("/login")}>Sign In</button>
-          <button className="btn-primary" type="button" onClick={() => navigate("/signup")}>Launch BudgetCommand</button>
+          {isSignedIn ? (
+            <>
+              <button className="btn-secondary" type="button" onClick={onSignOut}>Sign Out</button>
+              <button className="btn-primary" type="button" onClick={openApp}>Open App</button>
+            </>
+          ) : (
+            <>
+              <button className="btn-secondary" type="button" onClick={() => navigate("/login")}>Sign In</button>
+              <button className="btn-primary" type="button" onClick={openApp}>Launch BudgetCommand</button>
+            </>
+          )}
         </div>
       </nav>
 
@@ -58,10 +75,14 @@ export default function Landing({ navigate }: LandingProps) {
             BudgetCommand turns your income, expenses, subscriptions, and goals into a clear monthly money plan.
           </p>
           <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
-            <button className="btn-primary w-full text-base sm:w-auto" type="button" onClick={() => navigate("/signup")}>
-              Launch BudgetCommand <ArrowRight className="h-5 w-5" />
+            <button className="btn-primary w-full text-base sm:w-auto" type="button" onClick={openApp}>
+              {isSignedIn ? "Open App" : "Launch BudgetCommand"} <ArrowRight className="h-5 w-5" />
             </button>
-            <button className="btn-secondary w-full text-base sm:w-auto" type="button" onClick={() => navigate("/login")}>Sign In</button>
+            {isSignedIn ? (
+              <button className="btn-secondary w-full text-base sm:w-auto" type="button" onClick={onSignOut}>Sign Out</button>
+            ) : (
+              <button className="btn-secondary w-full text-base sm:w-auto" type="button" onClick={() => navigate("/login")}>Sign In</button>
+            )}
           </div>
 
           <div className="mt-7 flex flex-wrap gap-2">
@@ -145,8 +166,8 @@ export default function Landing({ navigate }: LandingProps) {
 
       <div className="safe-x fixed inset-x-0 bottom-3 z-20 sm:hidden">
         <div className="grid grid-cols-2 gap-3">
-          <button className="btn-primary" type="button" onClick={() => navigate("/signup")}>Launch</button>
-          <button className="btn-secondary" type="button" onClick={() => navigate("/login")}>Sign In</button>
+          <button className="btn-primary" type="button" onClick={openApp}>{isSignedIn ? "Open App" : "Launch"}</button>
+          <button className="btn-secondary" type="button" onClick={isSignedIn ? onSignOut : () => navigate("/login")}>{isSignedIn ? "Sign Out" : "Sign In"}</button>
         </div>
       </div>
     </main>

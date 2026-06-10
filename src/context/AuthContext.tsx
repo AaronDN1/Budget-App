@@ -22,7 +22,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let mounted = true;
     supabase.auth.getSession().then(({ data, error }) => {
       if (!mounted) return;
-      if (error) console.error(error.message);
+      if (error) {
+        setSession(null);
+        setUser(null);
+        setLoading(false);
+        return;
+      }
       setSession(data.session);
       setUser(data.session?.user ?? null);
       setLoading(false);

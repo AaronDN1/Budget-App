@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { trackEvent } from "../lib/analytics";
 
 const DISMISS_KEY = "budgetcommand-install-hint-dismissed";
 
@@ -14,7 +15,15 @@ export default function InstallPwaHint() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    setVisible(isIosSafariLike() && localStorage.getItem(DISMISS_KEY) !== "true");
+    const shouldShow = isIosSafariLike() && localStorage.getItem(DISMISS_KEY) !== "true";
+    setVisible(shouldShow);
+    if (shouldShow) trackEvent("pwa_install_prompt_shown");
+  }, []);
+
+  useEffect(() => {
+    const handler = () => trackEvent("pwa_install_accepted");
+    window.addEventListener("appinstalled", handler);
+    return () => window.removeEventListener("appinstalled", handler);
   }, []);
 
   if (!visible) return null;

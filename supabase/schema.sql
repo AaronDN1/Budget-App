@@ -19,6 +19,7 @@ create table if not exists public.profiles (
   theme text default 'light',
   custom_allocations jsonb,
   local_migration_completed boolean default false,
+  fund_allocation_reviewed boolean default false,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );

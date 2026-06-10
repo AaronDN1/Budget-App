@@ -19,13 +19,16 @@ interface SidebarProps {
   setActivePage: (page: PageKey) => void;
   userEmail?: string;
   onSignOut?: () => void;
+  onOpenLanding?: () => void;
 }
 
-export default function Sidebar({ activePage, setActivePage, userEmail, onSignOut }: SidebarProps) {
+export default function Sidebar({ activePage, setActivePage, userEmail, onSignOut, onOpenLanding }: SidebarProps) {
   return (
     <aside className="hidden border-b border-[color:var(--border)] bg-[color:var(--card)] backdrop-blur lg:flex lg:min-h-screen lg:w-72 lg:flex-col lg:border-b-0 lg:border-r">
       <div className="flex items-center justify-between px-4 py-4 lg:block lg:px-6">
-        <Logo size="md" />
+        <button className="text-left" type="button" onClick={onOpenLanding} aria-label="Open landing page">
+          <Logo size="md" showTagline={false} />
+        </button>
       </div>
       <nav className="flex gap-2 overflow-x-auto px-4 pb-4 lg:block lg:space-y-1 lg:px-4">
         {navItems.map(({ key, label, icon: Icon }) => {

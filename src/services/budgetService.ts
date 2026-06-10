@@ -21,10 +21,11 @@ type DbProfile = {
   theme: string | null;
   custom_allocations: AppSettings["customAllocation"] | null;
   local_migration_completed: boolean | null;
+  fund_allocation_reviewed: boolean | null;
 };
 
 const throwIfError = (error: { message: string } | null, fallback: string) => {
-  if (error) throw new Error(error.message || fallback);
+  if (error) throw new Error(fallback);
 };
 
 const toNumber = (value: unknown) => Number(value ?? 0);
@@ -61,6 +62,17 @@ export const updateProfile = async (userId: string, updates: Partial<DbProfile>)
     .eq("user_id", userId)
     .select()
     .single();
+  if (error && "fund_allocation_reviewed" in updates) {
+    const { fund_allocation_reviewed: _fundAllocationReviewed, ...compatibleUpdates } = updates;
+    const { data: compatibleData, error: compatibleError } = await supabase
+      .from("profiles")
+      .update(compatibleUpdates)
+      .eq("user_id", userId)
+      .select()
+      .single();
+    throwIfError(compatibleError, "Could not update profile.");
+    return compatibleData as DbProfile;
+  }
   throwIfError(error, "Could not update profile.");
   return data as DbProfile;
 };
@@ -86,14 +98,14 @@ export const createIncomeSource = async (userId: string, income: Omit<IncomeSour
   return data;
 };
 
-export const updateIncomeSource = async (id: string, updates: Partial<IncomeSource>) => {
-  const { data, error } = await supabase.from("income_sources").update(updates).eq("id", id).select().single();
+export const updateIncomeSource = async (userId: string, id: string, updates: Partial<IncomeSource>) => {
+  const { data, error } = await supabase.from("income_sources").update(updates).eq("user_id", userId).eq("id", id).select().single();
   throwIfError(error, "Could not update income source.");
   return data;
 };
 
-export const deleteIncomeSource = async (id: string) => {
-  const { error } = await supabase.from("income_sources").delete().eq("id", id);
+export const deleteIncomeSource = async (userId: string, id: string) => {
+  const { error } = await supabase.from("income_sources").delete().eq("user_id", userId).eq("id", id);
   throwIfError(error, "Could not delete income source.");
 };
 
@@ -131,7 +143,7 @@ export const createExpense = async (userId: string, expense: Omit<Expense, "id">
   return data;
 };
 
-export const updateExpense = async (id: string, updates: Partial<Expense>) => {
+export const updateExpense = async (userId: string, id: string, updates: Partial<Expense>) => {
   const { data, error } = await supabase
     .from("expenses")
     .update({
@@ -143,6 +155,7 @@ export const updateExpense = async (id: string, updates: Partial<Expense>) => {
       ...(updates.recurring !== undefined && { recurring: updates.recurring }),
       ...(updates.notes !== undefined && { notes: updates.notes }),
     })
+    .eq("user_id", userId)
     .eq("id", id)
     .select()
     .single();
@@ -150,8 +163,8 @@ export const updateExpense = async (id: string, updates: Partial<Expense>) => {
   return data;
 };
 
-export const deleteExpense = async (id: string) => {
-  const { error } = await supabase.from("expenses").delete().eq("id", id);
+export const deleteExpense = async (userId: string, id: string) => {
+  const { error } = await supabase.from("expenses").delete().eq("user_id", userId).eq("id", id);
   throwIfError(error, "Could not delete expense.");
 };
 
@@ -191,7 +204,7 @@ export const createSubscription = async (userId: string, subscription: Omit<Subs
   return data;
 };
 
-export const updateSubscription = async (id: string, updates: Partial<Subscription>) => {
+export const updateSubscription = async (userId: string, id: string, updates: Partial<Subscription>) => {
   const { data, error } = await supabase
     .from("subscriptions")
     .update({
@@ -204,6 +217,7 @@ export const updateSubscription = async (id: string, updates: Partial<Subscripti
       ...(updates.active !== undefined && { active: updates.active }),
       ...(updates.notes !== undefined && { notes: updates.notes }),
     })
+    .eq("user_id", userId)
     .eq("id", id)
     .select()
     .single();
@@ -211,8 +225,8 @@ export const updateSubscription = async (id: string, updates: Partial<Subscripti
   return data;
 };
 
-export const deleteSubscription = async (id: string) => {
-  const { error } = await supabase.from("subscriptions").delete().eq("id", id);
+export const deleteSubscription = async (userId: string, id: string) => {
+  const { error } = await supabase.from("subscriptions").delete().eq("user_id", userId).eq("id", id);
   throwIfError(error, "Could not delete subscription.");
 };
 
@@ -266,13 +280,16 @@ export const createDefaultFundsIfNeeded = async (userId: string) => {
   throwIfError(insertError, "Could not create default funds.");
 };
 
-export const updateFund = async (id: string, updates: Partial<{ current_balance: number; goal_amount: number | null; allocation_percentage: number }>) => {
-  const { data, error } = await supabase.from("funds").update(updates).eq("id", id).select().single();
+export const updateFund = async (userId: string, id: string, updates: Partial<{ current_balance: number; goal_amount: number | null; allocation_percentage: number }>) => {
+  const { data, error } = await supabase.from("funds").update(updates).eq("user_id", userId).eq("id", id).select().single();
   throwIfError(error, "Could not update fund.");
   return data;
 };
 
 export const createFundContribution = async (userId: string, fundId: string, contribution: Omit<FundContribution, "id" | "fundName" | "date">) => {
+  const { data: fund, error: fundError } = await supabase.from("funds").select("id").eq("user_id", userId).eq("id", fundId).single();
+  throwIfError(fundError, "Could not create fund contribution.");
+  if (!fund) throw new Error("Could not create fund contribution.");
   const { data, error } = await supabase
     .from("fund_contributions")
     .insert({ user_id: userId, fund_id: fundId, amount: contribution.amount, type: contribution.type, note: contribution.note })
@@ -282,8 +299,8 @@ export const createFundContribution = async (userId: string, fundId: string, con
   return data;
 };
 
-export const deleteFundContribution = async (id: string) => {
-  const { error } = await supabase.from("fund_contributions").delete().eq("id", id);
+export const deleteFundContribution = async (userId: string, id: string) => {
+  const { error } = await supabase.from("fund_contributions").delete().eq("user_id", userId).eq("id", id);
   throwIfError(error, "Could not delete fund contribution.");
 };
 
@@ -345,6 +362,7 @@ export const loadCloudBudgetData = async (userId: string, fallback: AppData): Pr
       theme: normalizeTheme(profile.theme || fallback.settings.theme),
       currencySymbol: profile.currency || fallback.settings.currencySymbol,
       budgetMonthStartDay: profile.budget_month_start_day || fallback.settings.budgetMonthStartDay,
+      hasReviewedFundAllocation: Boolean(profile.fund_allocation_reviewed) || Boolean(fallback.settings.hasReviewedFundAllocation),
     },
   };
 };
@@ -356,6 +374,7 @@ export const replaceCloudBudgetData = async (userId: string, data: AppData) => {
     selected_budget_mode: data.settings.hasChosenBudgetMode ? data.settings.budgetMode : null,
     theme: data.settings.theme,
     custom_allocations: data.settings.customAllocation,
+    fund_allocation_reviewed: data.settings.hasReviewedFundAllocation,
   });
 
   await Promise.all([
@@ -462,6 +481,7 @@ export const resetCloudBudgetData = async (userId: string) => {
       currencySymbol: "$",
       budgetMonthStartDay: 1,
       hasChosenBudgetMode: false,
+      hasReviewedFundAllocation: false,
     },
     monthlySnapshots: [],
   });

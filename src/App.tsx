@@ -15,6 +15,7 @@ import Settings from "./pages/Settings";
 import Subscriptions from "./pages/Subscriptions";
 import Auth from "./pages/Auth";
 import Landing from "./pages/Landing";
+import { trackPageView } from "./lib/analytics";
 import {
   calculateAvailableToAllocate,
   calculateBudgetHealthScore,
@@ -68,6 +69,10 @@ function AppRoutes() {
   }, []);
 
   useEffect(() => {
+    trackPageView(path);
+  }, [path]);
+
+  useEffect(() => {
     if (!authLoading && !user && path.startsWith("/app")) navigate("/login");
     if (!authLoading && user && (path === "/login" || path === "/signup")) navigate("/app/dashboard");
   }, [authLoading, navigate, path, user]);
@@ -79,7 +84,11 @@ function AppRoutes() {
   if (!user) {
     if (path === "/login") return <><Auth mode="login" navigate={navigate} /><InstallPwaHint /></>;
     if (path === "/signup") return <><Auth mode="signup" navigate={navigate} /><InstallPwaHint /></>;
-    return <><Landing navigate={navigate} /><InstallPwaHint /></>;
+    return <><Landing navigate={navigate} isSignedIn={false} /><InstallPwaHint /></>;
+  }
+
+  if (path === "/") {
+    return <><Landing navigate={navigate} isSignedIn onSignOut={signOut} /><InstallPwaHint /></>;
   }
 
   return (
@@ -168,7 +177,7 @@ function SignedInApp({
 
   return (
     <>
-      <Layout activePage={activePage} setActivePage={setActivePage} userEmail={userEmail} onSignOut={signOut}>
+      <Layout activePage={activePage} setActivePage={setActivePage} userEmail={userEmail} onSignOut={signOut} onOpenLanding={() => navigate("/")}>
         {(saving || error) && (
           <div className={`mb-4 rounded-lg border border-[color:var(--border)] bg-[color:var(--bg-soft)] px-4 py-3 text-sm font-semibold ${error ? "text-[color:var(--danger)]" : "text-[color:var(--primary)]"}`}>
             {error || "Saving to cloud..."}

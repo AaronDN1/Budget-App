@@ -122,9 +122,10 @@ Create a `.env.local` file in the project root:
 ```env
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_publishable_key
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ```
 
-Do not commit real Supabase keys or environment files to GitHub.
+`VITE_GA_MEASUREMENT_ID` is optional locally because the app has a public GA4 fallback ID. Set it in Vercel when you want analytics configured by environment. Do not commit real Supabase keys or environment files to GitHub.
 
 ### 4. Run the development server
 
@@ -162,6 +163,14 @@ supabase/schema.sql
 ```
 
 The schema sets up profiles, income sources, expenses, subscriptions, funds, fund contributions, monthly snapshots, indexes, updated-at triggers, auth profile creation, and Row Level Security policies.
+
+For the launch-prep security hardening pass, also run:
+
+```text
+supabase/security-hardening.sql
+```
+
+This reinforces RLS, recreates strict owner-only policies, adds useful indexes, and protects fund contributions so a contribution cannot be attached to another user's fund.
 
 For authentication redirects, include both your deployed Vercel URL and local development URL in Supabase settings, for example:
 
@@ -218,10 +227,12 @@ Planned or potential improvements:
 
 ## Security and Privacy
 
-- User data is stored in Supabase.
-- Frontend environment keys should stay out of GitHub.
-- Never use a Supabase service role key in the client app.
-- The included schema uses Supabase Row Level Security policies to help isolate each user's data.
+- User data is stored in Supabase and protected by Row Level Security policies that scope user-owned records to `auth.uid() = user_id`.
+- The Supabase anon/publishable key is expected in the browser. The Supabase service role key must never be exposed to the client app, committed to the repo, or added to Vercel frontend variables.
+- Required client environment variables are `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. `VITE_GA_MEASUREMENT_ID` is optional because the app has a public GA4 fallback.
+- Google Analytics is limited to safe product events and page views. Do not track income amounts, expense amounts, fund balances, user-created financial names, email addresses, Supabase user IDs, or raw form input.
+- Backup restore validates JSON shape and file size before replacing cloud data. Imports must never be allowed to set the authenticated user's ownership.
+- Client-side auth cooldowns reduce casual abuse and improve UX, but Supabase Auth rate limits and email protections should also be configured in the Supabase dashboard.
 
 ---
 
@@ -230,4 +241,3 @@ Planned or potential improvements:
 Created by **Aaron Nathans**
 
 GitHub: [@AaronDN1](https://github.com/AaronDN1)
-
