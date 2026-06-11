@@ -31,7 +31,7 @@ const heroChips = ["Smart Allocation", "Subscription Control", "Goal Funds"];
 
 export default function Landing({ navigate, isSignedIn, onSignOut }: LandingProps) {
   const openApp = () => {
-    trackEvent("landing_cta_clicked", { destination: isSignedIn ? "dashboard" : "signup" });
+    trackEvent("landing_cta_clicked", { action: isSignedIn ? "open_app" : "signup" });
     navigate(isSignedIn ? "/app/dashboard" : "/signup");
   };
 

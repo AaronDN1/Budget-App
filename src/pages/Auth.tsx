@@ -32,7 +32,7 @@ export default function Auth({ mode, navigate }: AuthProps) {
     setMessage("");
     try {
       if (isSignup) {
-        trackEvent("sign_up_started");
+        trackEvent("signup_started");
         await signUp(email, password);
         cooldown.recordSuccess();
         setMessage("Account created. Check your email if confirmation is enabled, then sign in.");

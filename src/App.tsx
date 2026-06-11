@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Layout from "./components/Layout";
 import InstallPwaHint from "./components/InstallPwaHint";
 import MigrationPrompt from "./components/MigrationPrompt";
@@ -15,7 +15,7 @@ import Settings from "./pages/Settings";
 import Subscriptions from "./pages/Subscriptions";
 import Auth from "./pages/Auth";
 import Landing from "./pages/Landing";
-import { trackPageView } from "./lib/analytics";
+import { trackEvent, trackPageView } from "./lib/analytics";
 import {
   calculateAvailableToAllocate,
   calculateBudgetHealthScore,
@@ -63,12 +63,17 @@ function useRoute() {
 function AppRoutes() {
   const { user, loading: authLoading, signOut } = useAuth();
   const { path, navigate } = useRoute();
+  const didSkipInitialPageView = useRef(false);
 
   useEffect(() => {
     applyTheme(localStorage.getItem(THEME_STORAGE_KEY));
   }, []);
 
   useEffect(() => {
+    if (!didSkipInitialPageView.current) {
+      didSkipInitialPageView.current = true;
+      return;
+    }
     trackPageView(path);
   }, [path]);
 
@@ -130,6 +135,12 @@ function SignedInApp({
   useEffect(() => {
     applyTheme(data.settings.theme);
   }, [data.settings.theme]);
+
+  useEffect(() => {
+    if (activePage === "paycheckPlanner") {
+      trackEvent("paycheck_planner_opened", { page: "paycheck_planner" });
+    }
+  }, [activePage]);
 
   const metrics = useMemo(() => {
     const income = calculateMonthlyIncome(data.incomeSources);
