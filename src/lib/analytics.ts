@@ -20,7 +20,12 @@ const sanitizeParams = (params: AnalyticsParams = {}) =>
   );
 
 export const initAnalytics = () => {
-  if (!GA_MEASUREMENT_ID || window.gtag) return;
+  if (!GA_MEASUREMENT_ID) return;
+
+  if (window.gtag) {
+    window.gtag("config", GA_MEASUREMENT_ID, { send_page_view: false });
+    return;
+  }
 
   window.dataLayer = window.dataLayer || [];
   window.gtag = (...args: unknown[]) => {
